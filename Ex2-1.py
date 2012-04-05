@@ -14,4 +14,5 @@ def openImage(image):
     WaitKey(0)                                      # Waits until a key is pressed (or window is closed)
     DestroyWindow("Example1")                       # Removes the window from the screen
 
-openImage("dolphin.jpg")                            # Test out function with a dolphin image
+if __name__ == "__main__":
+    openImage("dolphin.jpg")                            # Test out function with a dolphin image
