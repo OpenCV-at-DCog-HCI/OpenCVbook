@@ -6,6 +6,8 @@ __author__ = 'hutchins'
 from cv import NamedWindow, CaptureFromFile, QueryFrame, WaitKey, ShowImage, DestroyWindow
 
 def playVideo(source):
+    """ A simple function that reads frames from a video file source and displays them
+    in a window. """
 
     NamedWindow( "Example2")  # Create a window in which the video frames can be shown
     cap = CaptureFromFile(source)  # Create a video capture object for the source from which frames will be read
