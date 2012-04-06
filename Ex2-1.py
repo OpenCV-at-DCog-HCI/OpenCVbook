@@ -15,4 +15,5 @@ def openImage(image):
     DestroyWindow("Example1")                       # Removes the window from the screen
 
 if __name__ == "__main__":
-    openImage("dolphin.jpg")                            # Test out function with a dolphin image
+    path = "dolphin.jpg"
+    openImage(path)                                 # Test out function with a dolphin image
