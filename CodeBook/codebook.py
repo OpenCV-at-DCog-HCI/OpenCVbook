@@ -1,3 +1,43 @@
+'''
+Created on Apr 25, 2012
+
+@author: Whitney Friedman & Richard Tibbles
+
+4/26 1:08: Added learnBackground & preamble (may not all function yet)
+'''
+
+
+from cv import CaptureFromFile, QueryFrame
+
+
+def learnBackground(background):
+    cap = CaptureFromFile(background)
+    frame = QueryFrame(cap)
+    codeBooks=[]
+
+    # initialize all the codeBooks in the first frame. then run a loop for the rest.
+
+    for row in range(0,frame.height):
+        codeBooks.append([])
+        for column in range (0,frame.width):
+            pixel = frame[row,column]
+            codeBooks.append(codeBook(pixel))
+
+    # run through rest of frames...
+    frame = QueryFrame(cap)
+    while frame:
+        for row in range(0,frame.height):
+            for column in range (0,frame.width):
+                codebook=codeBooks[row][column]
+                pixel = frame[row,column]
+                codebook.updateCodebook(pixel)
+
+        frame = QueryFrame(cap)
+
+    return codeBooks
+
+
+
 class codeBook:
     
     def __init__(self,pixel,cbBounds=10,numChannels=3):
@@ -61,3 +101,14 @@ class ce:
         self.max = max
         self.min = min
         self.t_last_update = t_last_update
+
+
+
+if __name__=="__main__":
+
+    learningVideo = "/Users/Whitney/Temp/AerialClips/dolphinBackgroundShort_ROI"
+    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialShort_ROI"
+    output = "/Users/Whitney/Temp/AerialClips/dolphinBackground_codebook"
+
+
+    learnBackground(learningVideo)
