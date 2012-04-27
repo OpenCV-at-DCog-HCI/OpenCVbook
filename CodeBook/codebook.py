@@ -5,6 +5,9 @@ Created on Apr 25, 2012
 
 4/26 1:08: Added learnBackground & preamble (may not all function yet)
 4/26 5:35: Added lots of functions; almost complete (to do: make it run)
+4/27 9:52: Did a bit of debugging. changes to findForeground - possing codeBook(bgCodeBooks)
+something still to solve (TypeError: can only concatenate tuple (not "int") to tuple) in learnHigh/learnLow
+in codeBook init
 '''
 
 
@@ -13,6 +16,7 @@ from cv import CaptureFromFile, QueryFrame, CreateImage, GetSize, IPL_DEPTH_8U, 
 
 
 def findForeground(bgCodeBooks,dataVideo, videoOut):
+
     cap = CaptureFromFile(dataVideo)
     frame = QueryFrame(cap)
 
@@ -25,7 +29,7 @@ def findForeground(bgCodeBooks,dataVideo, videoOut):
         for row in range(0,frame.height):
             for column in range(0,frame.width):
                 fgPixel = frame[row,column]
-                mask[row,column]=codeBook[(row,column)].checkForeground(fgPixel)
+                mask[row,column]=codeBook(bgCodeBooks).checkForeground(fgPixel)
 
         # ShowImage("Mask View", mask)
         WriteFrame(writer,mask)
@@ -73,7 +77,7 @@ def learnBackground(background):
 
 
 
-class codeBook:
+class codeBook():
 
     def __init__(self,pixel,cbBounds=30,numChannels=3):
         self.cbBounds = [cbBounds]*numChannels
@@ -81,8 +85,20 @@ class codeBook:
         self.codeElements=[]
         self.t = 0
         pixel = list(pixel)
-        learnHigh = [x + cbBounds if x + cbBounds < 256 else 255 for x in pixel]
-        learnLow = [x - cbBounds if x - cbBounds > -1 else 0 for x in pixel]
+        #wf added until next comments...still doesn't work. 
+        learnHigh = [0]*numChannels
+        learnLow = [0]*numChannels
+
+        for n in range (0,numChannels):
+            if pixel[n]+cbBounds < 256:
+                learnHigh[n] = pixel[n]+cbBounds
+            else: learnHigh[n]=255
+
+            if pixel[n]-cbBounds > -1:
+                learnLow[n]=pixel[n]-cbBounds
+            else:learnLow[n] = 0
+            #learnHigh = [x + cbBounds if x + cbBounds < 256 else 255 for x in pixel]
+            #learnLow = [x - cbBounds if x - cbBounds > -1 else 0 for x in pixel]
         self.codeElements.append(ce(learnHigh,learnLow,pixel,pixel,self.t))
 
     def update_codebook (self,pixel):
