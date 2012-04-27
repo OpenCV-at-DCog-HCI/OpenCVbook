@@ -140,7 +140,7 @@ class codeBook:
         self.t = 0
         codeElements = codeElements[keep] #returns values if keep = 1; otherwise stale entry 'deleted'
 
-    def checkForeground(self,fgPixel,modMin=self.cbBounds, modMax=self.cbBounds):
+    def checkForeground(self,fgPixel,modMin=10, modMax=10):
         cbBounds = self.cbBounds
         numChannels = self.numChannels
         minMod = [modMin]*numChannels
