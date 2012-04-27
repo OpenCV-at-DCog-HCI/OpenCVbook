@@ -8,8 +8,8 @@ Created on Apr 25, 2012
 '''
 
 
-from cv import CaptureFromFile, QueryFrame, CreateImage, GetSize, IPL_DEPTH_8U, GetCaptureProperty, \
-CV_CAP_PROP_FOURCC, CreateVideoWriter, CV_CAP_PROP_FPS, WriteFrame
+from cv import CaptureFromFile, QueryFrame, CreateImage, GetSize, IPL_DEPTH_8U, GetCaptureProperty,\
+    CV_CAP_PROP_FOURCC, CreateVideoWriter, CV_CAP_PROP_FPS, WriteFrame, GetSize
 
 
 def findForeground(bgCodeBooks,dataVideo, videoOut):
@@ -17,18 +17,19 @@ def findForeground(bgCodeBooks,dataVideo, videoOut):
     frame = QueryFrame(cap)
 
     fourcc=int(GetCaptureProperty(cap,CV_CAP_PROP_FOURCC))
-    writer = CreateVideoWriter(videoOut,fourcc,GetCaptureProperty(cap,CV_CAP_PROP_FPS),self.size,is_color=1)
+    writer = CreateVideoWriter(videoOut,fourcc,GetCaptureProperty(cap,CV_CAP_PROP_FPS),GetSize(frame),is_color=1)
 
     while frame:
         mask = CreateImage(GetSize(frame), IPL_DEPTH_8U, 1)
 
         for row in range(0,frame.height):
-                for column in range(0,frame.width):
-                    fgPixel = frame[row,column]
-                    mask[row,column]=codeBooks[(row,column)].checkForeground(fgPixel)
+            for column in range(0,frame.width):
+                fgPixel = frame[row,column]
+                mask[row,column]=codeBook[(row,column)].checkForeground(fgPixel)
 
         # ShowImage("Mask View", mask)
         WriteFrame(writer,mask)
+        print "frame Written to file"
         frame = QueryFrame(cap)
 
     #DestroyWindow("regionView")
@@ -52,6 +53,7 @@ def learnBackground(background):
 
     # run through rest of frames...
     frame = QueryFrame(cap)
+    f = 0
     while frame:
         for row in range(0,frame.height):
             for column in range (0,frame.width):
@@ -59,8 +61,12 @@ def learnBackground(background):
                 pixel = frame[row,column]
                 codebook.update_codebook(pixel)
 
+        print 'codeBooks for frame', f ,'learned'
+
 
         frame = QueryFrame(cap)
+        f += 1
+
 
     return codeBooks
     print "finished creating codeBooks!"
@@ -69,7 +75,7 @@ def learnBackground(background):
 
 class codeBook:
 
-    def __init__(self,pixel,cbBounds=10,numChannels=3):
+    def __init__(self,pixel,cbBounds=30,numChannels=3):
         self.cbBounds = [cbBounds]*numChannels
         self.numChannels = numChannels
         self.codeElements=[]
@@ -141,7 +147,7 @@ class codeBook:
         codeElements = codeElements[keep] #returns values if keep = 1; otherwise stale entry 'deleted'
 
     def checkForeground(self,fgPixel,modMin=10, modMax=10):
-        cbBounds = self.cbBounds
+        #cbBounds = self.cbBounds
         numChannels = self.numChannels
         minMod = [modMin]*numChannels
         maxMod = [modMax]*numChannels
@@ -161,16 +167,6 @@ class codeBook:
 
 
 
-
-
-
-
-
-
-
-
-
-
 class ce:
     def __init__(self,learnHigh,learnLow,max,min,t_last_update):
         self.stale = 0
@@ -184,8 +180,8 @@ class ce:
 
 if __name__=="__main__":
 
-    learningVideo = "/Users/Whitney/Temp/AerialClips/dolphinBackgroundShort_ROI"
-    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialShort_ROI"
+    learningVideo = "/Users/Whitney/Temp/AerialClips/dolphinBackgroundVeryShort_ROI.mov"
+    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialVeryShort_ROI.mov"
     output = "/Users/Whitney/Temp/AerialClips/dolphinBackground_codebook"
 
 
