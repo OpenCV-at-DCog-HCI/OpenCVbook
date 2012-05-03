@@ -57,7 +57,7 @@ def learnBackground(background):
 
     # run through rest of frames...
     frame = QueryFrame(cap)
-    f = 0
+    f = 1
     while frame:
         for row in range(0,frame.height):
             for column in range (0,frame.width):
@@ -66,8 +66,6 @@ def learnBackground(background):
                 codebook.update_codebook(pixel)
 
         print 'codeBooks for frame', f ,'learned'
-
-
         frame = QueryFrame(cap)
         f += 1
 
@@ -81,6 +79,7 @@ class codeBook():
 
     def __init__(self,pixel,cbBounds=30,numChannels=3):
         self.cbBounds = [cbBounds]*numChannels
+        cbBounds=self.cbBounds
         self.numChannels = numChannels
         self.codeElements=[]
         self.t = 0
@@ -90,12 +89,12 @@ class codeBook():
         learnLow = [0]*numChannels
 
         for n in range (0,numChannels):
-            if pixel[n]+cbBounds < 256:
-                learnHigh[n] = pixel[n]+cbBounds
+            if pixel[n]+cbBounds[n] < 256:
+                learnHigh[n] = pixel[n]+cbBounds[n]
             else: learnHigh[n]=255
 
-            if pixel[n]-cbBounds > -1:
-                learnLow[n]=pixel[n]-cbBounds
+            if pixel[n]-cbBounds[n] > -1:
+                learnLow[n]=pixel[n]-cbBounds[n]
             else:learnLow[n] = 0
             #learnHigh = [x + cbBounds if x + cbBounds < 256 else 255 for x in pixel]
             #learnLow = [x - cbBounds if x - cbBounds > -1 else 0 for x in pixel]
@@ -197,9 +196,10 @@ class ce:
 if __name__=="__main__":
 
     learningVideo = "/Users/Whitney/Temp/AerialClips/dolphinBackgroundVeryShort_ROI.mov"
-    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialVeryShort_ROI.mov"
+    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialShort_ROI"
     output = "/Users/Whitney/Temp/AerialClips/dolphinBackground_codebook"
 
 
     bgCodeBooks=learnBackground(learningVideo)
-    findForeground(bgCodeBooks,dataVideo,output)
+
+    #findForeground(bgCodeBooks,dataVideo,output)
