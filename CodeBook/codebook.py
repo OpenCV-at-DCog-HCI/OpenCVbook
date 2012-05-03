@@ -77,7 +77,7 @@ def learnBackground(background):
 
 class codeBook():
 
-    def __init__(self,pixel,cbBounds=30,numChannels=3):
+    def __init__(self,pixel,cbBounds=10,numChannels=3):
         self.cbBounds = [cbBounds]*numChannels
         cbBounds=self.cbBounds
         self.numChannels = numChannels
@@ -134,11 +134,12 @@ class codeBook():
                         if celist[i].learnLow[n] < low[n]:
                             celist[i].learnLow[n] += 1
                 break
+
         for s in range(0,numEntries):
             negRun = self.t - celist[s].t_last_update
             if celist[s].stale < negRun:
                 celist[s].stale = negRun
-        if i==numEntries:
+        if i==numEntries-1:
             celist.append(ce(high,low,pixel,pixel,self.t))
 
     def clear_stale_entries(self):
@@ -201,5 +202,8 @@ if __name__=="__main__":
 
 
     bgCodeBooks=learnBackground(learningVideo)
-
+    print bgCodeBooks[(50,50)].codeElements
+    print bgCodeBooks[(17,78)].codeElements
+    print bgCodeBooks[(39,367)].codeElements
+    print bgCodeBooks[(89,294)].codeElements
     #findForeground(bgCodeBooks,dataVideo,output)
