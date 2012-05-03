@@ -29,7 +29,8 @@ def findForeground(bgCodeBooks,dataVideo, videoOut):
         for row in range(0,frame.height):
             for column in range(0,frame.width):
                 fgPixel = frame[row,column]
-                mask[row,column]=codeBook(bgCodeBooks).checkForeground(fgPixel)
+                codeBook=bgCodeBooks[(row,column)]  #KeyError: (0, 560)
+                mask[row,column]=codeBook.checkForeground(fgPixel)
 
         # ShowImage("Mask View", mask)
         WriteFrame(writer,mask)
@@ -204,13 +205,9 @@ class ce:
 if __name__=="__main__":
 
     learningVideo = "/Users/Whitney/Temp/AerialClips/dolphinBackgroundVeryShort_ROI.mov"
-    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialShort_ROI"
-    output = "/Users/Whitney/Temp/AerialClips/dolphinBackground_codebook"
+    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialVeryShort_ROI.mov"
+    output = "/Users/Whitney/Temp/AerialClips/dolphinBackground_codebook.mov"
 
 
     bgCodeBooks=learnBackground(learningVideo)
-    print bgCodeBooks[(50,50)].codeElements
-    print bgCodeBooks[(17,78)].codeElements
-    print bgCodeBooks[(39,367)].codeElements
-    print bgCodeBooks[(89,294)].codeElements
-    #findForeground(bgCodeBooks,dataVideo,output)
+    findForeground(bgCodeBooks,dataVideo,output)
