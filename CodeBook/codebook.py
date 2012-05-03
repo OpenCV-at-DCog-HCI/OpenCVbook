@@ -109,14 +109,18 @@ class codeBook():
         pixel = list(pixel)
         high = [0]*numChannels
         low = [0]*numChannels
+        newEntry = True
         #Set high and low for this pixel, make sure they are not outside the bounds of 0 and 255
         for n in range(0,numChannels):
             high[n] = pixel[n]+cbBounds[n]
             if high[n] > 255:
                 high[n] = 255
+
             low[n] = pixel[n]-cbBounds[n]
             if low[n] < 0:
                 low[n] = 0
+
+
         for i in range(0,numEntries):
             matchChannel = 0
             for n in range(0,numChannels):
@@ -129,17 +133,20 @@ class codeBook():
                         celist[i].max[n] = pixel[n]
                         if celist[i].learnHigh[n] < high[n]:
                             celist[i].learnHigh[n] += 1
+
                     elif celist[i].min[n] > pixel[n]:
                         celist[i].min[n] = pixel[n]
                         if celist[i].learnLow[n] < low[n]:
                             celist[i].learnLow[n] += 1
+                newEntry=False
                 break
 
         for s in range(0,numEntries):
             negRun = self.t - celist[s].t_last_update
             if celist[s].stale < negRun:
                 celist[s].stale = negRun
-        if i==numEntries-1:
+
+        if newEntry:
             celist.append(ce(high,low,pixel,pixel,self.t))
 
     def clear_stale_entries(self):
@@ -188,8 +195,8 @@ class ce:
         self.stale = 0
         self.learnHigh = learnHigh
         self.learnLow = learnLow
-        self.max = max
-        self.min = min
+        self.max = list(max)
+        self.min = list(min)
         self.t_last_update = t_last_update
 
 
