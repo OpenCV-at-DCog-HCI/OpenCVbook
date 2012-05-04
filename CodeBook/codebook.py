@@ -12,34 +12,37 @@ in codeBook init
 
 
 from cv import CaptureFromFile, QueryFrame, CreateImage, GetSize, IPL_DEPTH_8U, GetCaptureProperty,\
-    CV_CAP_PROP_FOURCC, CreateVideoWriter, CV_CAP_PROP_FPS, WriteFrame, GetSize
+    CreateVideoWriter, CV_CAP_PROP_FPS, WriteFrame, ShowImage, DestroyWindow, Copy, CV_CAP_PROP_FOURCC
 
 
 def findForeground(bgCodeBooks,dataVideo, videoOut):
-
     cap = CaptureFromFile(dataVideo)
     frame = QueryFrame(cap)
-
+    fgFrame = CreateImage(GetSize(frame), IPL_DEPTH_8U, 3)
+    Mask = CreateImage(GetSize(frame), IPL_DEPTH_8U, 3)
     fourcc=int(GetCaptureProperty(cap,CV_CAP_PROP_FOURCC))
+    #fourcc=828601953
+    #fourcc=877677894
     writer = CreateVideoWriter(videoOut,fourcc,GetCaptureProperty(cap,CV_CAP_PROP_FPS),GetSize(frame),is_color=1)
 
     while frame:
-        mask = CreateImage(GetSize(frame), IPL_DEPTH_8U, 1)
 
         for row in range(0,frame.height):
             for column in range(0,frame.width):
                 fgPixel = frame[row,column]
-                codeBook=bgCodeBooks[(row,column)]  #KeyError: (0, 560)
-                mask[row,column]=codeBook.checkForeground(fgPixel)
+                codeBook=bgCodeBooks[(row,column)]
+                Mask[row,column]=tuple([codeBook.checkForeground(fgPixel)]*3)
 
-        # ShowImage("Mask View", mask)
-        WriteFrame(writer,mask)
+        Copy(Mask,fgFrame)
+        print fgFrame
+        #ShowImage("Foreground View", fgFrame)
+        WriteFrame(writer,fgFrame)
         print "frame Written to file"
         frame = QueryFrame(cap)
 
     #DestroyWindow("regionView")
-    print 'File written to: '
-    print videoOut
+    print 'File written to: ',videoOut
+
 
 
 def learnBackground(background):
@@ -204,9 +207,9 @@ class ce:
 
 if __name__=="__main__":
 
-    learningVideo = "/Users/Whitney/Temp/AerialClips/dolphinBackgroundVeryShort_ROI.mov"
-    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialVeryShort_ROI.mov"
-    output = "/Users/Whitney/Temp/AerialClips/dolphinBackground_codebook.mov"
+    learningVideo = "/Users/Whitney/Temp/AerialClips/dolphinBackgroundShort_ROI"
+    dataVideo = "/Users/Whitney/Temp/AerialClips/dolphinAerialShort_ROI"
+    output = "/Users/Whitney/Temp/AerialClips/dolphinBackground_codebook2"
 
 
     bgCodeBooks=learnBackground(learningVideo)
